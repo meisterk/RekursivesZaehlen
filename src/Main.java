@@ -1,3 +1,4 @@
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 
 public class Main {
@@ -5,8 +6,8 @@ public class Main {
     public static void main(String[] args) {
         //zaehlenVonBis(1, 100);
         //zaehlenVonBisMitThreads(1,100);
-        int summe = summeVonBis(1, 100);
-        System.out.println(summe);
+        summeVonBisMitThreads(1, 100);
+        //System.out.println(summe);
     }
 
     private static int summeVonBis(int min, int max) {
@@ -27,6 +28,20 @@ public class Main {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
         ZaehlenTask rootTask = new ZaehlenTask(min, max);
         forkJoinPool.invoke(rootTask);
+    }
+
+    private static void summeVonBisMitThreads(int min, int max) {
+        ForkJoinPool forkJoinPool = new ForkJoinPool();
+        SummenTask rootTask = new SummenTask(min, max);
+        forkJoinPool.invoke(rootTask);
+        try {
+            int ergebnis = rootTask.get();
+            System.out.println(ergebnis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void zaehlenVonBis(int min, int max) {
